@@ -218,7 +218,11 @@ class LazyExpansionTile extends StatefulWidget {
   final WidgetBuilder builder;
   final bool initiallyExpanded;
 
-  const LazyExpansionTile({required this.title, required this.builder, required this.initiallyExpanded});
+  const LazyExpansionTile({
+    required this.title,
+    required this.builder,
+    required this.initiallyExpanded,
+  });
 
   @override
   _LazyExpansionTileState createState() => _LazyExpansionTileState();
@@ -235,15 +239,22 @@ class _LazyExpansionTileState extends State<LazyExpansionTile> {
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionTile(
-      title: widget.title,
-      initiallyExpanded: widget.initiallyExpanded,
-      onExpansionChanged: (bool expanded) {
-        setState(() {
-          _expanded = expanded;
-        });
-      },
-      children: _expanded ? [widget.builder(context)] : [],
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ListTile(
+          leading: const Icon(Icons.copy),
+          title: widget.title,
+          trailing: IconButton(
+              onPressed: () {
+                setState(() {
+                  _expanded = !_expanded;
+                });
+              },
+              icon: Icon(_expanded ? Icons.minimize : Icons.maximize)),
+        ),
+        _expanded ? widget.builder(context) : const SizedBox.shrink(),
+      ],
     );
   }
 }
