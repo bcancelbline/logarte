@@ -67,30 +67,51 @@ class _LogarteDashboardScreenState extends State<LogarteDashboardScreen> {
                     labelPadding: const EdgeInsets.symmetric(horizontal: 12.0),
                     indicatorSize: TabBarIndicatorSize.tab,
                     tabs: [
-                      Tab(
-                        icon: const Icon(Icons.list_alt_rounded),
-                        text: 'All (${widget.instance.logs.value.length})',
-                      ),
-                      Tab(
-                        icon: const Icon(Icons.bug_report_rounded),
-                        text:
-                            'Logging (${widget.instance.logs.value.whereType<PlainLogarteEntry>().length})',
-                      ),
-                      Tab(
-                        icon: const Icon(Icons.public),
-                        text:
-                            'Network (${widget.instance.logs.value.whereType<NetworkLogarteEntry>().length})',
-                      ),
-                      Tab(
-                        icon: const Icon(Icons.save_as_rounded),
-                        text:
-                            'Database (${widget.instance.logs.value.whereType<DatabaseLogarteEntry>().length})',
-                      ),
-                      Tab(
-                        icon: const Icon(Icons.navigation_rounded),
-                        text:
-                            'Navigation (${widget.instance.logs.value.whereType<NavigatorLogarteEntry>().length})',
-                      ),
+                      ValueListenableBuilder(
+                          valueListenable: widget.instance.logs,
+                          builder: (context, values, child) {
+                            return Tab(
+                              icon: const Icon(Icons.list_alt_rounded),
+                              text:
+                                  'All (${widget.instance.logs.value.length})',
+                            );
+                          }),
+                      ValueListenableBuilder(
+                          valueListenable: widget.instance.logs,
+                          builder: (context, values, child) {
+                            return Tab(
+                              icon: const Icon(Icons.bug_report_rounded),
+                              text:
+                                  'Logging (${widget.instance.logs.value.whereType<PlainLogarteEntry>().length})',
+                            );
+                          }),
+                      ValueListenableBuilder(
+                          valueListenable: widget.instance.logs,
+                          builder: (context, values, child) {
+                            return Tab(
+                              icon: const Icon(Icons.public),
+                              text:
+                                  'Network (${widget.instance.logs.value.whereType<NetworkLogarteEntry>().length})',
+                            );
+                          }),
+                      ValueListenableBuilder(
+                          valueListenable: widget.instance.logs,
+                          builder: (context, values, child) {
+                            return Tab(
+                              icon: const Icon(Icons.save_as_rounded),
+                              text:
+                                  'Database (${widget.instance.logs.value.whereType<DatabaseLogarteEntry>().length})',
+                            );
+                          }),
+                      ValueListenableBuilder(
+                          valueListenable: widget.instance.logs,
+                          builder: (context, values, child) {
+                            return Tab(
+                              icon: const Icon(Icons.navigation_rounded),
+                              text:
+                                  'Navigation (${widget.instance.logs.value.whereType<NavigatorLogarteEntry>().length})',
+                            );
+                          }),
                       if (widget.instance.customTab != null)
                         const Tab(
                           icon: Icon(Icons.extension_rounded),
