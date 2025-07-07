@@ -5,6 +5,8 @@ import 'package:logarte/src/extensions/entry_extensions.dart';
 import 'package:logarte/src/extensions/object_extensions.dart';
 import 'package:logarte/src/extensions/string_extensions.dart';
 
+enum MenuItem {normal, curl}
+
 class NetworkLogEntryDetailsScreen extends StatelessWidget {
   final NetworkLogarteEntry entry;
   final Logarte instance;
@@ -14,7 +16,7 @@ class NetworkLogEntryDetailsScreen extends StatelessWidget {
     Key? key,
     required this.instance,
   }) : super(key: key);
-
+  
   @override
   Widget build(BuildContext context) {
     return LogarteThemeWrapper(
@@ -31,19 +33,53 @@ class NetworkLogEntryDetailsScreen extends StatelessWidget {
           ),
           centerTitle: false,
           actions: [
-            IconButton(
-              icon: const Icon(Icons.share),
-              onPressed: () {
-                final text = entry.toString();
-                instance.onShare?.call(text);
+            PopupMenuButton<MenuItem>(
+              tooltip: 'Copy',
+              icon: const Icon(Icons.copy),
+              onSelected: (item) {
+                switch (item) {
+                  case MenuItem.normal:
+                    entry.toString().copyToClipboard(context);
+                    break;
+                  case MenuItem.curl:
+                    entry.curlCommand().copyToClipboard(context);
+                    break;
+                }
               },
+              itemBuilder: (_) => <PopupMenuEntry<MenuItem>>[
+                const PopupMenuItem<MenuItem>(
+                  value: MenuItem.normal,
+                  child: Text('Copy'),
+                ),
+                const PopupMenuItem<MenuItem>(
+                  value: MenuItem.curl,
+                  child: Text('Copy as cURL'),
+                ),
+              ],
             ),
-            IconButton(
-              icon: const Icon(Icons.copy_all),
-              onPressed: () {
-                final text = entry.toString();
-                text.copyToClipboard(context);
+            PopupMenuButton<MenuItem>(
+              tooltip: 'Share',
+              icon: const Icon(Icons.share),
+              onSelected: (item){
+                switch (item) {
+                  case MenuItem.normal:
+                    instance.onShare?.call(entry.toString());
+                    break;
+                  case MenuItem.curl:
+                    instance.onShare?.call(entry.curlCommand());
+                    break;
+                }
               },
+              itemBuilder: (_) => <PopupMenuEntry<MenuItem>>[
+                const PopupMenuItem<MenuItem>(
+                  value: MenuItem.normal,
+                  child: Text('Share'),
+                ),
+                const PopupMenuItem<MenuItem>(
+                  value: MenuItem.curl,
+                  child: Text('Share as cURL'),
+                ),
+              ],
             ),
             const SizedBox(width: 12.0),
           ],
