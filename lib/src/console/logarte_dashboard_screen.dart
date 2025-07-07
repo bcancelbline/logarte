@@ -141,6 +141,14 @@ class _LogarteDashboardScreenState extends State<LogarteDashboardScreen> {
               },
             ),
           ),
+          floatingActionButton: FloatingActionButton.extended(
+            backgroundColor: Colors.red,
+            onPressed: () {
+              widget.instance.logs.value = [];
+            },
+            label: const Text("Clear"),
+            icon: const Icon(Icons.clear),
+          ),
         ),
       ),
     );
