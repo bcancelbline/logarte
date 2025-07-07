@@ -198,7 +198,10 @@ class SelectableCopiableTile extends StatelessWidget {
         return builder != null
             ? builder!(context, data: subtitle)
             : Padding(
-                padding: const EdgeInsets.only(top: 4.0),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 8,
+                  horizontal: 20,
+                ),
                 child: SelectableText(
                   subtitle,
                   onTap: () => _copyToClipboard(context),
@@ -251,7 +254,7 @@ class _LazyExpansionTileState extends State<LazyExpansionTile> {
                   _expanded = !_expanded;
                 });
               },
-              icon: Icon(_expanded ? Icons.minimize : Icons.maximize)),
+              icon: Icon(_expanded ? Icons.minimize : Icons.add)),
         ),
         _expanded ? widget.builder(context) : const SizedBox.shrink(),
       ],
