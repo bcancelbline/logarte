@@ -16,7 +16,7 @@ class NetworkLogEntryDetailsScreen extends StatelessWidget {
     Key? key,
     required this.instance,
   }) : super(key: key);
-  
+
   @override
   Widget build(BuildContext context) {
     return LogarteThemeWrapper(
@@ -103,22 +103,26 @@ class NetworkLogEntryDetailsScreen extends StatelessWidget {
                           SelectableCopiableTile(
                             title: 'METHOD',
                             subtitle: entry.request.method,
+                            builder: null,
                           ),
                           const Divider(height: 0.0),
                           SelectableCopiableTile(
                             title: 'URL',
                             subtitle: entry.request.url,
+                            builder: null,
                           ),
                           const Divider(height: 0.0),
                           SelectableCopiableTile(
                             title: 'HEADERS',
                             subtitle: entry.request.headers.prettyJson,
+                            builder: instance.bodyWidgetBuilder,
                           ),
                           if (entry.request.method != 'GET') ...[
                             const Divider(height: 0.0),
                             SelectableCopiableTile(
                               title: 'BODY',
                               subtitle: entry.request.body.prettyJson,
+                              builder: instance.bodyWidgetBuilder,
                             ),
                           ],
                         ],
@@ -130,16 +134,19 @@ class NetworkLogEntryDetailsScreen extends StatelessWidget {
                           SelectableCopiableTile(
                             title: 'STATUS CODE',
                             subtitle: entry.response.statusCode.toString(),
+                            builder: null,
                           ),
                           const Divider(height: 0.0),
                           SelectableCopiableTile(
                             title: 'HEADERS',
                             subtitle: entry.response.headers.prettyJson,
+                            builder: instance.bodyWidgetBuilder,
                           ),
                           const Divider(height: 0.0),
                           SelectableCopiableTile(
                             title: 'BODY',
                             subtitle: entry.response.body.prettyJson,
+                            builder: instance.bodyWidgetBuilder,
                           ),
                         ],
                       ),
@@ -158,10 +165,12 @@ class NetworkLogEntryDetailsScreen extends StatelessWidget {
 class SelectableCopiableTile extends StatelessWidget {
   final String title;
   final String subtitle;
+  final Widget Function(BuildContext context, {required String data})? builder;
 
   const SelectableCopiableTile({
     required this.title,
     required this.subtitle,
+    required this.builder,
     Key? key,
   }) : super(key: key);
 
@@ -178,12 +187,12 @@ class SelectableCopiableTile extends StatelessWidget {
       ),
       subtitle: Padding(
         padding: const EdgeInsets.only(top: 4.0),
-        child: SelectableText(
+        child: builder != null ? builder!(context, data: subtitle) : SelectableText(
           subtitle,
           onTap: () => _copyToClipboard(context),
         ),
       ),
-      // trailing: const Icon(Icons.copy),
+      trailing: const Icon(Icons.copy),
     );
   }
 
