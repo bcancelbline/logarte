@@ -225,7 +225,13 @@ class LazyExpansionTile extends StatefulWidget {
 }
 
 class _LazyExpansionTileState extends State<LazyExpansionTile> {
-  bool _expanded = false;
+  late bool _expanded;
+
+  @override
+  void initState() {
+    _expanded = widget.initiallyExpanded;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
