@@ -5,7 +5,7 @@ import 'package:logarte/src/extensions/entry_extensions.dart';
 import 'package:logarte/src/extensions/object_extensions.dart';
 import 'package:logarte/src/extensions/string_extensions.dart';
 
-enum MenuItem {normal, curl}
+enum MenuItem { normal, curl }
 
 class NetworkLogEntryDetailsScreen extends StatelessWidget {
   final NetworkLogarteEntry entry;
@@ -60,7 +60,7 @@ class NetworkLogEntryDetailsScreen extends StatelessWidget {
             PopupMenuButton<MenuItem>(
               tooltip: 'Share',
               icon: const Icon(Icons.share),
-              onSelected: (item){
+              onSelected: (item) {
                 switch (item) {
                   case MenuItem.normal:
                     instance.onShare?.call(entry.toString());
@@ -102,18 +102,21 @@ class NetworkLogEntryDetailsScreen extends StatelessWidget {
                         children: [
                           SelectableCopiableTile(
                             title: 'METHOD',
+                            initiallyExpanded: true,
                             subtitle: entry.request.method,
                             builder: null,
                           ),
                           const Divider(height: 0.0),
                           SelectableCopiableTile(
                             title: 'URL',
+                            initiallyExpanded: true,
                             subtitle: entry.request.url,
                             builder: null,
                           ),
                           const Divider(height: 0.0),
                           SelectableCopiableTile(
                             title: 'HEADERS',
+                            initiallyExpanded: false,
                             subtitle: entry.request.headers.prettyJson,
                             builder: instance.bodyWidgetBuilder,
                           ),
@@ -121,6 +124,7 @@ class NetworkLogEntryDetailsScreen extends StatelessWidget {
                             const Divider(height: 0.0),
                             SelectableCopiableTile(
                               title: 'BODY',
+                              initiallyExpanded: false,
                               subtitle: entry.request.body.prettyJson,
                               builder: instance.bodyWidgetBuilder,
                             ),
@@ -133,18 +137,21 @@ class NetworkLogEntryDetailsScreen extends StatelessWidget {
                         children: [
                           SelectableCopiableTile(
                             title: 'STATUS CODE',
+                            initiallyExpanded: true,
                             subtitle: entry.response.statusCode.toString(),
                             builder: null,
                           ),
                           const Divider(height: 0.0),
                           SelectableCopiableTile(
                             title: 'HEADERS',
+                            initiallyExpanded: false,
                             subtitle: entry.response.headers.prettyJson,
                             builder: instance.bodyWidgetBuilder,
                           ),
                           const Divider(height: 0.0),
                           SelectableCopiableTile(
                             title: 'BODY',
+                            initiallyExpanded: false,
                             subtitle: entry.response.body.prettyJson,
                             builder: instance.bodyWidgetBuilder,
                           ),
@@ -165,10 +172,12 @@ class NetworkLogEntryDetailsScreen extends StatelessWidget {
 class SelectableCopiableTile extends StatelessWidget {
   final String title;
   final String subtitle;
+  final bool initiallyExpanded;
   final Widget Function(BuildContext context, {required String data})? builder;
 
   const SelectableCopiableTile({
     required this.title,
+    required this.initiallyExpanded,
     required this.subtitle,
     required this.builder,
     Key? key,
@@ -176,8 +185,8 @@ class SelectableCopiableTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      onTap: () => _copyToClipboard(context),
+    return LazyExpansionTile(
+      initiallyExpanded: initiallyExpanded,
       title: SelectableText(
         title,
         style: const TextStyle(
@@ -185,18 +194,50 @@ class SelectableCopiableTile extends StatelessWidget {
         ),
         onTap: () => _copyToClipboard(context),
       ),
-      subtitle: Padding(
-        padding: const EdgeInsets.only(top: 4.0),
-        child: builder != null ? builder!(context, data: subtitle) : SelectableText(
-          subtitle,
-          onTap: () => _copyToClipboard(context),
-        ),
-      ),
-      trailing: const Icon(Icons.copy),
+      builder: (context) {
+        return builder != null
+            ? builder!(context, data: subtitle)
+            : Padding(
+                padding: const EdgeInsets.only(top: 4.0),
+                child: SelectableText(
+                  subtitle,
+                  onTap: () => _copyToClipboard(context),
+                ),
+              );
+      },
     );
   }
 
   Future<void> _copyToClipboard(BuildContext context) {
     return subtitle.copyToClipboard(context);
+  }
+}
+
+class LazyExpansionTile extends StatefulWidget {
+  final Widget title;
+  final WidgetBuilder builder;
+  final bool initiallyExpanded;
+
+  const LazyExpansionTile({required this.title, required this.builder, required this.initiallyExpanded});
+
+  @override
+  _LazyExpansionTileState createState() => _LazyExpansionTileState();
+}
+
+class _LazyExpansionTileState extends State<LazyExpansionTile> {
+  bool _expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionTile(
+      title: widget.title,
+      initiallyExpanded: widget.initiallyExpanded,
+      onExpansionChanged: (bool expanded) {
+        setState(() {
+          _expanded = expanded;
+        });
+      },
+      children: _expanded ? [widget.builder(context)] : [],
+    );
   }
 }
